@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Radhe Rani Jaap</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<script>
+if("serviceWorker" in navigator){ navigator.serviceWorker.register("service-worker.js"); }
+</script>
+</head>
+<body>
+<style>
+/* same compact UI code from previous message */
+body{margin:0;padding:8px;background:radial-gradient(circle,#ffecd2,#e63946);
+font-family:sans-serif;color:white;text-align:center;height:100vh;display:flex;
+flex-direction:column;justify-content:space-between;align-items:center;}
+img{width:60%;max-width:240px;border-radius:12px;box-shadow:0 0 10px #fff;margin-top:4px;}
+h1{font-size:20px;margin:4px;} #radheText{font-size:28px;margin:0;}
+#counter{font-size:46px;margin:4px;font-weight:bold;} #timeDisplay{font-size:16px;margin:2px;}
+button{width:85%;max-width:320px;padding:10px;font-size:18px;border:none;border-radius:12px;margin:3px;cursor:pointer;}
+#countBtn{background:#b30000;color:white;}#pauseBtn{background:#222;color:white;}#resetBtn{background:#ffb703;color:black;}
+#progressContainer{width:85%;height:8px;background:#ffffff44;border-radius:20px;margin-bottom:8px;}
+#progressBar{height:100%;width:0%;background:#b30000;border-radius:20px;}
+</style>
+
+<img src="radhe_rani_maharaj.jpg" alt="Radhe Rani & Maharaj Ji">
+<h1>🕉️ Radhe Rani Naam Jaap 🕉️</h1>
+<div id="radheText">✨ RADHE ✨</div>
+<h2 id="counter">0</h2>
+<h3 id="timeDisplay">0h 0m 0s</h3>
+
+<button id="countBtn" onclick="increase()">🔔 Radhe Radhe</button>
+<button id="pauseBtn" onclick="pauseTimer()">⏸ Pause</button>
+<button id="resetBtn" onclick="resetCounter()">🔁 Reset</button>
+
+<div id="progressContainer"><div id="progressBar"></div></div>
+<audio id="soundRadhe" src="radhe.mp3" preload="auto"></audio>
+
+<script>
+/* JavaScript: Counter + Timer + Save Progress */
+let count=parseInt(localStorage.getItem("jaapCount"))||0;
+let startTime=localStorage.getItem("jaapStartTime");
+let totalTime=parseInt(localStorage.getItem("jaapTotalTime"))||0;
+let running=false,timer,x=document.getElementById("soundRadhe");
+document.getElementById("counter").innerText=count;updateProgress();updateTimeDisplay();
+
+function updateTimeDisplay(){let t=totalTime;if(running&&startTime)t+=Date.now()-startTime;
+let s=Math.floor(t/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+document.getElementById("timeDisplay").innerText=`${h}h ${m}m ${ss}s`; }
+
+function startTimer(){if(!running){running=true;startTime=Date.now();
+localStorage.setItem("jaapStartTime",startTime);
+timer=setInterval(updateTimeDisplay,1000);}}
+
+function increase(){ if(!running)startTimer();count++;
+document.getElementById("counter").innerText=count;localStorage.setItem("jaapCount",count);
+x.currentTime=0;x.play();updateProgress();}
+
+function pauseTimer(){if(running){running=false;clearInterval(timer);
+totalTime+=Date.now()-startTime;localStorage.setItem("jaapTotalTime",totalTime);} }
+
+function resetCounter(){pauseTimer();count=0;totalTime=0;startTime=null;
+["jaapCount","jaapStartTime","jaapTotalTime"].forEach(localStorage.removeItem.bind(localStorage));
+document.getElementById("counter").innerText=0;document.getElementById("timeDisplay").innerText="0h 0m 0s";updateProgress();}
+
+function updateProgress(){let p=(count/100000000)*100;document.getElementById("progressBar").style.width=p+"%";}
+</script>
+</body>
+</html>
+
